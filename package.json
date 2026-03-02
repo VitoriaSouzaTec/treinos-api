@@ -10,14 +10,19 @@
   "scripts": {
     "dev": "tsx --watch src/index.ts"
   },
-
-    "engines": {
-      "node": "24.x"
-    },
+  "engines": {
+    "node": "24.x"
+  },
   "devDependencies": {
-    "eslint": "^9.39.2",
+    "@eslint/js": "^10.0.1",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "globals": "^17.4.0",
     "prettier": "^3.8.1",
     "tsx": "^4.21.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^8.56.1"
+  },
+  "dependencies": {
+    "eslint-config-prettier": "^10.1.8"
   }
 }
