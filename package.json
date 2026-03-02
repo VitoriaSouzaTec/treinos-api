@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/node": "^25.3.3",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "globals": "^17.4.0",
     "prettier": "^3.8.1",
@@ -23,6 +24,8 @@
     "typescript-eslint": "^8.56.1"
   },
   "dependencies": {
-    "eslint-config-prettier": "^10.1.8"
+    "dotenv": "^17.3.1",
+    "eslint-config-prettier": "^10.1.8",
+    "fastify": "^5.7.4"
   }
 }
