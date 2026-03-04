@@ -12,6 +12,7 @@ import {
 import z from "zod";
 import { auth } from "./lib/auth.js";
 import fastifyCors from "@fastify/cors";
+import fastifyApiReference from "@scalar/fastify-api-reference";
 
 const app = Fastify({
   logger: true,
@@ -20,50 +21,61 @@ const app = Fastify({
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 
-await app.register(fastifySwagger,{
-  openapi:{
-    info:{
-      title:"Treinos API",
-      description:"API de treinos",
-      version:"1.0.0",
+await app.register(fastifySwagger, {
+  openapi: {
+    info: {
+      title: "Treinos API",
+      description: "API de treinos",
+      version: "1.0.0",
     },
-    servers:[
+    servers: [
       {
-        url:"http://localhost:3030",
-        description:"Localhost",
+        url: "http://localhost:3030",
+        description: "Localhost",
       },
     ],
   },
-  transform:jsonSchemaTransform,
+  transform: jsonSchemaTransform,
 });
 
-await app.register(fastifySwaggerUi,{
-  routePrefix:"/docs",
-})
 
 // precisa colocar await pq funciona de forma assincrona tem que esperar o fastify registrar os plugins pra criar as rotas 
 
-await app.register(fastifyCors,{
-  origin:"http://localhost:3000",
-  credentials:true,
+await app.register(fastifyCors, {
+  origin: "http://localhost:3000",
+  credentials: true,
 })
+
+// registro de documentacao com scalar
+await app.register(fastifyApiReference, {
+  routePrefix: "/docs",
+  configuration: {
+    sources: [
+
+      {
+        title: "Treinos API",
+        slug: "treinos-api",
+        url: "/swagger.json",
+      },
+      {
+        title: "Auth API",
+        slug: "auth-api",
+        url: "/api/auth/open-api/generate-schema",
+      },
+    ],
+  },
+});
+
 
 app.withTypeProvider<ZodTypeProvider>().route({
   method: "GET",
-  url: "/",
+  url: "/swagger.json",
   schema: {
-    description: "Hello world",
-    tags: ["Hello World"],
-    response: {
-      200: z.object({
-        message: z.string(),
-      }),
-    },
+    hide: true,
   },
+
   handler: async () => {
-    return {
-      message: "Hello World",
-    };
+    return app.swagger();
   },
 });
 
@@ -74,7 +86,7 @@ app.route({
     try {
       // Construct request URL
       const url = new URL(request.url, `http://${request.headers.host}`);
-      
+
       // Convert Fastify headers to standard Headers object
       const headers = new Headers();
       Object.entries(request.headers).forEach(([key, value]) => {
@@ -94,7 +106,7 @@ app.route({
       reply.send(response.body ? await response.text() : null);
     } catch (error) {
       app.log.error(error);
-      reply.status(500).send({ 
+      reply.status(500).send({
         error: "Internal authentication error",
         code: "AUTH_FAILURE"
       });
