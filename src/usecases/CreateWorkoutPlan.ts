@@ -1,14 +1,34 @@
 import { WeekDay } from "../generated/prisma/enums.js";
 import { prisma } from "../lib/db.js";
 
-interface Dto {
+interface InputDto {
     userId: string;
     name: string;
     workoutDays: Array<{
         name: string;
         weekDay: WeekDay;
-        isRestDay: boolean;
-        estimatedDurationMinutes: number;
+        isRest: boolean;
+        estimatedDurationInSeconds: number;
+        coverImageUrl?: string;
+        exercises: Array<{
+            name: string;
+            order: number;
+            sets: number;
+            reps: number;
+            restTimeInSeconds: number;
+        }>;
+    }>;
+}
+
+interface OutputDto {
+    id: string;
+    name: string;
+    workoutDays: Array<{
+        name: string;
+        weekDay: WeekDay;
+        isRest: boolean;
+        estimatedDurationInSeconds: number;
+        coverImageUrl?: string;
         exercises: Array<{
             name: string;
             order: number;
@@ -20,13 +40,11 @@ interface Dto {
 }
 
 export class CreateWorkoutPlan {
-    async execute(dto: Dto) {
-        const result = await prisma.$transaction(async (tx) => {
+    async execute(dto: InputDto): Promise<OutputDto> {
+        return await prisma.$transaction(async (tx) => {
             const existWorkoutPlan = await tx.workoutPlan.findFirst({
                 where: { userId: dto.userId, isActive: true },
             });
-
-            //   transiction - atomicidade
 
             if (existWorkoutPlan) {
                 await tx.workoutPlan.update({
@@ -35,7 +53,7 @@ export class CreateWorkoutPlan {
                 });
             }
 
-            return await tx.workoutPlan.create({
+            const workoutPlan = await tx.workoutPlan.create({
                 data: {
                     userId: dto.userId,
                     name: dto.name,
@@ -43,8 +61,9 @@ export class CreateWorkoutPlan {
                         create: dto.workoutDays.map((day) => ({
                             name: day.name,
                             weekDay: day.weekDay,
-                            isRest: day.isRestDay,
-                            estimatedDurationInSeconds: day.estimatedDurationMinutes * 60,
+                            isRest: day.isRest,
+                            estimatedDurationInSeconds: day.estimatedDurationInSeconds,
+                            coverImageUrl: day.coverImageUrl,
                             exercises: {
                                 create: day.exercises.map((exercise) => ({
                                     name: exercise.name,
@@ -57,9 +76,33 @@ export class CreateWorkoutPlan {
                         })),
                     },
                 },
+                include: {
+                    workoutDays: {
+                        include: {
+                            exercises: true,
+                        },
+                    },
+                },
             });
-        });
 
-        return result;
+            return {
+                id: workoutPlan.id,
+                name: workoutPlan.name,
+                workoutDays: workoutPlan.workoutDays.map((day) => ({
+                    name: day.name,
+                    weekDay: day.weekDay,
+                    isRest: day.isRest,
+                    estimatedDurationInSeconds: day.estimatedDurationInSeconds,
+                    coverImageUrl: day.coverImageUrl ?? undefined,
+                    exercises: day.exercises.map((exercise) => ({
+                        name: exercise.name,
+                        order: exercise.order,
+                        sets: exercise.sets,
+                        reps: exercise.reps,
+                        restTimeInSeconds: exercise.restTimeInSeconds,
+                    })),
+                })),
+            };
+        });
     }
 }

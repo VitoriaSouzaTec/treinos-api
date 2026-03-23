@@ -9,12 +9,12 @@ import {
   validatorCompiler,
   ZodTypeProvider,
 } from "fastify-type-provider-zod";
-import z from "zod";
+
 import { auth } from "./lib/auth.js";
 import fastifyCors from "@fastify/cors";
 import fastifyApiReference from "@scalar/fastify-api-reference";
-import { WeekDay } from "./generated/prisma/enums.js";
-import { request } from "node:http";
+
+import workoutPlanRoutes from "./routes/workout-plan.js";
 
 const app = Fastify({
   logger: true,
@@ -68,43 +68,11 @@ await app.register(fastifyApiReference, {
   },
 });
 
-// REST FULL
-app.withTypeProvider<ZodTypeProvider>().route({
-  method: "POST",
-  url: "/workout-plans",
-  schema: {
-    body: z.object({
-      name: z.string().trim().min(1),
-      workoutDays: z.array(
-        z.object({
-          name: z.string().trim().min(1),
-          weekDay: z.enum(WeekDay),
-          isRestDay: z.boolean().default(false),
-          estimatedDurationMinutes: z.number().min(1),
-          exercises: z.array(
-            z.object({
-              name: z.string().trim().min(1),
-              order: z.number().min(0),
-              sets: z.number().min(1),
-              reps: z.number().min(1),
-              restTimeInSeconds: z.number().min(1),
-            })
-          ),
-        })
-      ),
-    }),
-   response: {
-  201: z.object({
-    id: z.uuid(),
-  }),
-  400: z.object({
-    error: z.string(),
-    code: z.string(), // INVALID_WEEKDAY
-  })         
-},
-  },
-  handler: async (request, reply) => {}
-});
+
+// routes
+await app.register(workoutPlanRoutes, { prefix: "/workout-plans" });
+
+// Controller
 
 
 
