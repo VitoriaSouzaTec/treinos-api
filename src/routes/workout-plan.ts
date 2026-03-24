@@ -5,8 +5,9 @@ import z from "zod";
 
 import { NotFoundError, SessionAlreadyStartedError, WorkoutPlanNotActiveError } from "../errors/index.js";
 import { auth } from "../lib/auth.js";
-import { ErrorSchema, getWorkoutPlanByIdResponseSchema, startWorkoutSessionResponseSchema, updateWorkoutSessionBodySchema, updateWorkoutSessionResponseSchema, workoutPlanSchema } from "../schemas/index.js";
+import { ErrorSchema, getWorkoutDayByIdResponseSchema, getWorkoutPlanByIdResponseSchema, startWorkoutSessionResponseSchema, updateWorkoutSessionBodySchema, updateWorkoutSessionResponseSchema, workoutPlanSchema } from "../schemas/index.js";
 import { CreateWorkoutPlan } from "../usecases/CreateWorkoutPlan.js";
+import { GetWorkoutDayById } from "../usecases/GetWorkoutDayById.js";
 import { GetWorkoutPlanById } from "../usecases/GetWorkoutPlanById.js";
 import { StartWorkoutSession } from "../usecases/StartWorkoutSession.js";
 import { UpdateWorkoutSession } from "../usecases/UpdateWorkoutSession.js";
@@ -216,6 +217,57 @@ const workoutPlanRoutes = async (app: FastifyInstance) => {
         const result = await getWorkoutPlan.execute({
           userId: session.user.id,
           planId: request.params.id,
+        });
+        return reply.status(200).send(result);
+      } catch (error) {
+        app.log.error(error);
+        if (error instanceof NotFoundError) {
+          return reply.status(404).send({
+            error: error.message,
+            code: "NOT_FOUND_ERROR",
+          });
+        }
+        return reply.status(500).send({
+          error: "Internal server error",
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    },
+  });
+
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "GET",
+    url: "/:id/days/:dayId",
+    schema: {
+      tags: ["Workout Plan"],
+      summary: "Get a workout day by id",
+      params: z.object({
+        id: z.string().uuid(),
+        dayId: z.string().uuid(),
+      }),
+      response: {
+        200: getWorkoutDayByIdResponseSchema,
+        401: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      try {
+        const session = await auth.api.getSession({
+          headers: fromNodeHeaders(request.headers),
+        });
+        if (!session) {
+          return reply.status(401).send({
+            error: "Unauthorized",
+            code: "UNAUTHORIZED",
+          });
+        }
+        const getWorkoutDay = new GetWorkoutDayById();
+        const result = await getWorkoutDay.execute({
+          userId: session.user.id,
+          planId: request.params.id,
+          dayId: request.params.dayId,
         });
         return reply.status(200).send(result);
       } catch (error) {

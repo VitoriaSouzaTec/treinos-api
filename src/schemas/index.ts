@@ -81,3 +81,46 @@ export const getWorkoutPlanByIdResponseSchema = z.object({
         })
     )
 })
+
+export const getWorkoutDayByIdResponseSchema = z.object({
+    id: z.string().uuid(),
+    name: z.string(),
+    isRest: z.boolean(),
+    coverImageUrl: z.string().optional(),
+    estimatedDurationInSeconds: z.number(),
+    exercises: z.array(z.object({
+        id: z.string().uuid(),
+        name: z.string(),
+        order: z.number(),
+        workoutDayId: z.string().uuid(),
+        sets: z.number(),
+        reps: z.number(),
+        restTimeInSeconds: z.number(),
+    })),
+    weekDay: z.string(),
+    sessions: z.array(z.object({
+        id: z.string().uuid(),
+        workoutDayId: z.string().uuid(),
+        startedAt: z.string().datetime().optional(),
+        completedAt: z.string().datetime().optional(),
+    })),
+})
+
+export const getStatsQuerySchema = z.object({
+    from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD"),
+    to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD"),
+})
+
+export const getStatsResponseSchema = z.object({
+    workoutStreak: z.number(),
+    consistencyByDay: z.record(
+        z.string(),
+        z.object({
+            workoutDayCompleted: z.boolean(),
+            workoutDayStarted: z.boolean(),
+        })
+    ),
+    completedWorkoutsCount: z.number(),
+    conclusionRate: z.number(),
+    totalTimeInSeconds: z.number(),
+})
