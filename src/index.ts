@@ -1,7 +1,8 @@
 import "dotenv/config";
 
+import fastifyCors from "@fastify/cors";
 import fastifySwagger from "@fastify/swagger";
-
+import fastifyApiReference from "@scalar/fastify-api-reference";
 import Fastify from "fastify";
 import { jsonSchemaTransform } from "fastify-type-provider-zod";
 import {
@@ -11,9 +12,7 @@ import {
 } from "fastify-type-provider-zod";
 
 import { auth } from "./lib/auth.js";
-import fastifyCors from "@fastify/cors";
-import fastifyApiReference from "@scalar/fastify-api-reference";
-
+import homeRoutes from "./routes/home.js";
 import workoutPlanRoutes from "./routes/workout-plan.js";
 
 const app = Fastify({
@@ -70,6 +69,7 @@ await app.register(fastifyApiReference, {
 
 
 // routes
+await app.register(homeRoutes, { prefix: "/home" });
 await app.register(workoutPlanRoutes, { prefix: "/workout-plans" });
 
 // Controller
