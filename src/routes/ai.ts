@@ -28,12 +28,12 @@ REGRAS OBRIGATÓRIAS:
    - Dias sem treino devem passar isRest: true, exercises: [] e estimatedDurationInSeconds: 0.
    - SEMPRE forneça um 'coverImageUrl' obrigatório para CADA DIA, usando as seguintes imagens exclusivas:
      - Dias de treino SUPERIOR (peito, costas, ombros, bíceps, tríceps, push, pull, upper, full body) E DIAS DE DESCANSO:
-       Opção A: "https://gw8hy3fdcv.ufs.sh/f/ccoBDpLoAPCO3y8pQ6GBg8iqe9pP2JrHjwd1nfKtVSQskI0v"
-       Opção B: "https://gw8hy3fdcv.ufs.sh/f/ccoBDpLoAPCOW3fJmqZe4yoUcwvRPQa8kmFprzNiC30hqftL"
+       "https://gw8hy3fdcv.ufs.sh/f/ccoBDpLoAPCO3y8pQ6GBg8iqe9pP2JrHjwd1nfKtVSQskI0v"
+       "https://gw8hy3fdcv.ufs.sh/f/ccoBDpLoAPCOW3fJmqZe4yoUcwvRPQa8kmFprzNiC30hqftL"
      - Dias de treino INFERIOR (pernas, glúteos, quadríceps, posterior, panturrilha, legs, lower):
-       Opção A: "https://gw8hy3fdcv.ufs.sh/f/ccoBDpLoAPCOgCHaUgNGronCvXmSzAMs1N3KgLdE5yHT6Ykj"
-       Opção B: "https://gw8hy3fdcv.ufs.sh/f/ccoBDpLoAPCO85RVu3morROwZk5NPhs1jzH7X8TyEvLUCGxY"
-     Alterne as imagens quando houver treinos consecutivos do mesmo tipo.
+       "https://gw8hy3fdcv.ufs.sh/f/ccoBDpLoAPCOgCHaUgNGronCvXmSzAMs1N3KgLdE5yHT6Ykj"
+       "https://gw8hy3fdcv.ufs.sh/f/ccoBDpLoAPCO85RVu3morROwZk5NPhs1jzH7X8TyEvLUCGxY"
+     Alterne as imagens quando houver treinos consecutivos do mesmo tipo. ENVIE APENAS O LINK (URL) BRUTO NO CAMPO coverImageUrl, SEM PREFIXOS COMO 'Opção A:'.
 7. Quando você tiver todas as informações para montar o treino, chame a tool createWorkoutPlan.
 8. Mantenha suas respostas curtas, naturais e super objetivas.
 
@@ -155,7 +155,7 @@ const aiRoutes = async (app: FastifyInstance) => {
                       estimatedDurationInSeconds: z
                         .number()
                         .describe("Duração total em segundos estimada"),
-                      coverImageUrl: z.string().url().describe("A URL de imagem estrita"),
+                      coverImageUrl: z.string().describe("A URL de imagem estrita (links ufs.sh fornecidos)"),
                       exercises: z.array(
                         z.object({
                           order: z.number().int(),
