@@ -30,6 +30,7 @@ const workoutPlanRoutes = async (app: FastifyInstance) => {
       const session = await auth.api.getSession({
         headers: fromNodeHeaders(request.headers),
       });
+
       if (!session) {
         return reply.status(401).send({
           error: "Unauthorized",
@@ -83,6 +84,7 @@ const workoutPlanRoutes = async (app: FastifyInstance) => {
         const session = await auth.api.getSession({
           headers: fromNodeHeaders(request.headers),
         });
+
         if (!session) {
           return reply.status(401).send({
             error: "Unauthorized",
@@ -149,6 +151,7 @@ const workoutPlanRoutes = async (app: FastifyInstance) => {
         const session = await auth.api.getSession({
           headers: fromNodeHeaders(request.headers),
         });
+
         if (!session) {
           return reply.status(401).send({
             error: "Unauthorized",
@@ -207,6 +210,7 @@ const workoutPlanRoutes = async (app: FastifyInstance) => {
         const session = await auth.api.getSession({
           headers: fromNodeHeaders(request.headers),
         });
+
         if (!session) {
           return reply.status(401).send({
             error: "Unauthorized",
@@ -257,6 +261,7 @@ const workoutPlanRoutes = async (app: FastifyInstance) => {
         const session = await auth.api.getSession({
           headers: fromNodeHeaders(request.headers),
         });
+
         if (!session) {
           return reply.status(401).send({
             error: "Unauthorized",
