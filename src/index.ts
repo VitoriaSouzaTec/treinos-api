@@ -14,6 +14,7 @@ import {
 import { auth } from "./lib/auth.js";
 import aiRoutes from "./routes/ai.js";
 import homeRoutes from "./routes/home.js";
+import { meRoutes } from "./routes/me.js";
 import statsRoutes from "./routes/stats.js";
 import workoutPlanRoutes from "./routes/workout-plan.js";
 
@@ -74,6 +75,7 @@ await app.register(fastifyApiReference, {
 await app.register(aiRoutes, { prefix: "/ai" });
 await app.register(homeRoutes, { prefix: "/home" });
 await app.register(statsRoutes, { prefix: "/stats" });
+await app.register(meRoutes, { prefix: "/me" });
 await app.register(workoutPlanRoutes, { prefix: "/workout-plans" });
 
 // Controller
@@ -118,8 +120,28 @@ app.route({
       const response = await auth.handler(req);
       // Forward response to client
       reply.status(response.status);
-      response.headers.forEach((value, key) => reply.header(key, value));
-      reply.send(response.body ? await response.text() : null);
+      
+      
+      for (const [key, value] of response.headers.entries()) {
+        if (key.toLowerCase() === 'set-cookie') {
+         
+          continue;
+        }
+        reply.header(key, value);
+      }
+      
+
+      const setCookies = (response.headers as any).getSetCookie?.() || response.headers.get('set-cookie');
+      if (setCookies) {
+        if (Array.isArray(setCookies)) {
+          setCookies.forEach(cookie => reply.header('set-cookie', cookie));
+        } else {
+          reply.header('set-cookie', setCookies);
+        }
+      }
+
+      const body = await response.text();
+      reply.send(body || null);
     } catch (error) {
       app.log.error(error);
       reply.status(500).send({

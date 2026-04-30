@@ -124,3 +124,20 @@ export const getStatsResponseSchema = z.object({
     conclusionRate: z.number(),
     totalTimeInSeconds: z.number(),
 })
+
+export const getUserTrainDataResponseSchema = z.object({
+  id: z.string().uuid(),
+  weightInGrams: z.number(),
+  heightInCentimeters: z.number(),
+  age: z.number(),
+  bodyFatPercentage: z.number(),
+});
+
+export const upsertUserTrainDataBodySchema = z.object({
+  weightInGrams: z.number().optional(),
+  heightInCentimeters: z.number().optional(),
+  age: z.number().optional(),
+  bodyFatPercentage: z.number().optional(),
+});
+
+export const upsertUserTrainDataResponseSchema = getUserTrainDataResponseSchema;
