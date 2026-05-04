@@ -14,6 +14,17 @@ import {
 import { GetUserTrainData } from "../usecases/GetUserTrainData.js";
 import { UpsertUserTrainData } from "../usecases/UpsertUserTrainData.js";
 
+
+function formatTrainData(data: any) {
+  return {
+    id: data.id,
+    weightInGrams: data.weightInGrams ?? 0,
+    heightInCentimeters: data.heightInCentimeters ?? 0,
+    age: data.age ?? 0,
+    bodyFatPercentage: data.bodyFatPercentage ?? 0,
+  };
+}
+
 export const meRoutes = async (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "GET",
@@ -33,6 +44,7 @@ export const meRoutes = async (app: FastifyInstance) => {
         const session = await auth.api.getSession({
           headers: fromNodeHeaders(request.headers),
         });
+
         if (!session) {
           return reply.status(401).send({
             error: "Unauthorized",
@@ -45,7 +57,14 @@ export const meRoutes = async (app: FastifyInstance) => {
           userId: session.user.id,
         });
 
-        return reply.status(200).send(result);
+        
+        if (!result) {
+          return reply.status(200).send(null);
+        }
+
+        const formatted = formatTrainData(result);
+
+        return reply.status(200).send(formatted);
       } catch (error) {
         app.log.error(error);
         return reply.status(500).send({
@@ -75,6 +94,7 @@ export const meRoutes = async (app: FastifyInstance) => {
         const session = await auth.api.getSession({
           headers: fromNodeHeaders(request.headers),
         });
+
         if (!session) {
           return reply.status(401).send({
             error: "Unauthorized",
@@ -91,7 +111,9 @@ export const meRoutes = async (app: FastifyInstance) => {
           bodyFatPercentage: request.body.bodyFatPercentage,
         });
 
-        return reply.status(200).send(result);
+        const formatted = formatTrainData(result);
+
+        return reply.status(200).send(formatted);
       } catch (error) {
         app.log.error(error);
         return reply.status(500).send({
