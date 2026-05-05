@@ -9,7 +9,7 @@
   "types": "module",
    "scripts": {
     "dev": "tsx --watch src/index.ts",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.json",
     "prestart": "npm run build",
     "start": "prisma migrate deploy && node dist/index.js",
     "postinstall": "prisma generate"
