@@ -25,7 +25,8 @@ RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install --omit=dev
+COPY prisma ./prisma/
+RUN npm install --omit=dev --ignore-scripts
 
 # Copy compiled code from builder
 COPY --from=builder /app/dist ./dist
@@ -35,7 +36,7 @@ COPY --from=builder /app/dist ./dist
 # This ensures that the engine binaries, which tsc might skip, are present.
 COPY --from=builder /app/src/generated ./src/generated
 
-EXPOSE 3000
+EXPOSE 3030
 
-# Using the production start command from package.json
-CMD ["npm", "run", "start:prod"]
+# Using the start command from package.json
+CMD ["npm", "run", "start"]

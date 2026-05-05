@@ -11,8 +11,8 @@
     "dev": "tsx --watch src/index.ts",
     "build": "tsc",
     "prestart": "npm run build",
-    "start": "node dist/index.js",
-    "postinstall": "prisma generate && prisma migrate deploy"
+    "start": "prisma migrate deploy && node dist/index.js",
+    "postinstall": "prisma generate"
   },
   "engines": {
     "node": "24.x"
