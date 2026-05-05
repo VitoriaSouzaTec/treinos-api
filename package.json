@@ -14,7 +14,7 @@
     "postinstall": "prisma generate"
   },
   "engines": {
-    "node": "^20.0.0"
+    "node": "^22.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
