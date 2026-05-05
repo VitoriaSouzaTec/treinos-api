@@ -128,8 +128,11 @@ app.route({
 const start = async () => {
     try {
         const port = Number(process.env.PORT);
-        await app.listen({ port });
-        console.log(`Server listening on http://localhost:${port}`);
+        await app.listen({
+            port,
+            host: '0.0.0.0'
+        });
+        console.log(`Server listening on port ${port}`);
     }
     catch (err) {
         app.log.error(err);
