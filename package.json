@@ -22,7 +22,6 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "globals": "^17.4.0",
     "prettier": "^3.8.1",
-    "prisma": "^7.4.0",
     "tsx": "^4.21.0",
     "typescript": "^5.4.5",
     "typescript-eslint": "^8.56.1"
@@ -41,6 +40,7 @@
     "eslint-config-prettier": "^10.1.8",
     "fastify": "^5.7.4",
     "fastify-type-provider-zod": "^6.1.0",
+    "prisma": "^7.4.0",
     "zod": "^4.3.6"
   }
 }
